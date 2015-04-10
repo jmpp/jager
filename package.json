@@ -1,0 +1,31 @@
+{
+  "name": "jager",
+  "version": "1.0.0",
+  "description": "Simple game for HTML5 Game Jam",
+  "main": "server.js",
+  "dependencies": {
+    "colors": "^1.0.3",
+    "express": "^4.12.3",
+    "morgan": "^1.5.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jmpp/jager.git"
+  },
+  "keywords": [
+    "html5",
+    "game",
+    "jam"
+  ],
+  "author": "jmpp, emilienregent, MonsieurTweek",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jmpp/jager/issues"
+  },
+  "homepage": "https://github.com/jmpp/jager"
+}
