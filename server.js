@@ -17,6 +17,8 @@ app.use(morgan('dev'));
 
 app.use(require('./routes'));
 
+require('./websockets')(server);
+
 server.listen(app.get('port'), function() {
   console.log('✔ Express server listening on port'.green, app.get('port').toString().cyan);
 });
