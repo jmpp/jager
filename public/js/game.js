@@ -34,6 +34,7 @@ var Game = function()
 	    });
 
 	    this.ws.on('disconnectPlayer', function(data) {
+	    	console.log("disconnect player " + data.token);
 	    	delete instance.players[data.token];
 	    });
 
