@@ -58,7 +58,7 @@ var Client = function()
             instance.token = data.token;
         });
         var name = UniTest.playerNames[Math.floor(Math.random() * UniTest.playerNames.length)];
-        instance.ws.emit('createPlayer', {name : name});
+        instance.ws.emit('createPlayer', {name : name + '-' + instance.token});
 
         instance.ws.on('nameIsTaken', function() {
             // @todo : say player the name is already taken
