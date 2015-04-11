@@ -170,4 +170,14 @@ function createPlayer() {
         token = data.token;
     });
     ws.emit('createPlayer', {name : 'Toto'});
+
+    ws.on('nameIsTaken', function() {
+        // @todo : say player the name is already taken
+        console.log('name already taken, sorry')
+    });
+
+    ws.on('serverDisconnected', function() {
+        // @todo : say player the server has disconnected
+        console.log('server has disconnected :/')
+    });
 }
