@@ -33,10 +33,9 @@ var Game = function()
 			instance.addPlayer(data.token, data);
 	    });
 
-    this.ws.on('disconnectPlayer', function(data) {
-    	// @todo: supprimer le joueur data.token
-    	console.log('player disconnected', data);
-    });
+	    this.ws.on('disconnectPlayer', function(data) {
+	    	delete instance.players[token];
+	    });
 
 		this.configure();
 
