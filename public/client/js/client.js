@@ -16,7 +16,13 @@ var pointers; // collections of pointers
 
 var canvas, ctx; // ctx is the canvas' context 2D
 
-var radius = 100;
+var radius = 50;
+var radiusMax = 200;
+
+var offsetX, offsetY;
+var borneX, borneY;
+
+var token, ws;
 
 document.addEventListener("DOMContentLoaded", init);
 
@@ -37,6 +43,10 @@ function init() {
     canvas.addEventListener('pointermove', onPointerMove, false);
     canvas.addEventListener('pointerup', onPointerUp, false);
     canvas.addEventListener('pointerout', onPointerUp, false);
+
+    // Send player informations
+    createPlayer();
+
     requestAnimFrame(draw);
 }
 
@@ -52,6 +62,13 @@ function resetCanvas(e) {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = "1";
+    ctx.beginPath();
+    ctx.arc(canvas.width/2, canvas.height/2, radiusMax, 0, Math.PI * 2, true);
+    ctx.stroke();
+    ctx.closePath();
+
     pointers.forEach(function (pointer) {
         ctx.strokeStyle = "red";
         ctx.fillStyle = "red";
@@ -61,6 +78,7 @@ function draw() {
         ctx.arc(pointer.x, pointer.y, radius, 0, Math.PI * 2, true);
         ctx.fill();
         ctx.stroke();
+        ctx.closePath();
     });
 
     requestAnimFrame(draw);
@@ -92,8 +110,27 @@ function onPointerDown(e) {
 
 function onPointerMove(e) {
     if (pointers.item(0)) {
-        pointers.item(0).x = e.clientX;
-        pointers.item(0).y = e.clientY;
+
+        // Calculate offset
+        offsetX = (e.clientX + radius - (canvas.width / 2)) / (radiusMax);
+        offsetY = (e.clientY + radius - (canvas.height / 2)) / (radiusMax);
+
+        var dx = Math.abs(e.clientX - canvas.width / 2);
+        var dy = Math.abs(e.clientY - canvas.height / 2);
+        var R = radiusMax - radius;
+
+        if(dx + dy <= R || dx*dx + dy*dy <= R*R) {
+            pointers.item(0).x = e.clientX;
+            pointers.item(0).y = e.clientY;
+        }
+
+        offsetX = offsetX > 1 ? 1 : offsetX;
+        offsetX = offsetX < -1 ? -1 : offsetX;
+        offsetY = offsetY > 1 ? 1 : offsetY;
+        offsetY = offsetY < -1 ? -1 : offsetY;
+
+        ws.emit('movePlayer', {token: token, x: offsetX, y: offsetY});
+
     }
 }
 
@@ -125,4 +162,12 @@ function setupCanvas() {
     // Initial call 
     respondCanvas();
 
+}
+
+function createPlayer() {
+    ws = io();
+    ws.on('setToken', function(data) {
+        token = data.token;
+    });
+    ws.emit('createPlayer', {name : 'Toto'});
 }
