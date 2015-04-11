@@ -26,8 +26,8 @@ function socketsControllerClient(req, res, next) {
   console.log("in middleware socketsControllerClient()".cyan);
   ws.on('connection', function(socket) {
     // New player request
-    socket.on('createPlayer', function createPlayer(name) {
-      console.log('--> createPlayer('.cyan + name.toString().magenta +')'.cyan);
+    socket.on('createPlayer', function createPlayer(data) {
+      console.log('--> createPlayer('.cyan + data.name.toString().magenta +')'.cyan);
 
       var token = shortid.generate();
 
@@ -36,17 +36,17 @@ function socketsControllerClient(req, res, next) {
       console.log('<-- setToken('.cyan + token.magenta +')'.cyan);
 
       // Sending new player socket to the server view
-      socketServer.emit('addPlayer', { token: token, name: name });
-      console.log('<-- addPlayer('.cyan + token.magenta, name.magenta +')'.cyan);
+      socketServer.emit('addPlayer', { token: token, name: data.name });
+      console.log('<-- addPlayer('.cyan + token.magenta, data.name.magenta +')'.cyan);
     })
 
     // Move player request
     socket.on('movePlayer', function movePlayer(data) {
-      // expects data to be like { token, position: {x, y} }
+      // expects data to be like { token, x, y }
 
       // Sending the position to the server view
       socketServer.emit('movePlayer', data);
-      console.log('<-- movePlayer('.blue + (data.position.x +' '+ data.position.y).magenta +')'.blue);
+      console.log('<-- movePlayer('.blue + (data.x +' '+ data.y).magenta +')'.blue);
     })
   })
 
