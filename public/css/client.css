@@ -1,0 +1,12 @@
+body {
+	margin: 0;
+}
+
+#responsive-canvas {
+	position: absolute;
+	top: 0;
+	left: 0;
+	-ms-touch-action: none;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+}
