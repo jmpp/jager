@@ -1,1 +1,1 @@
-canvas#scene {margin: auto; display: block; background-color: black;}
+canvas#scene {background-color: black; position: absolute;; top: 0; left: 0;}
