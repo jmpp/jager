@@ -91,6 +91,8 @@ var Game = function()
 	{
 		canvas.drawRect(canvas);
 
+		var hasJager = false;
+
 		for(var token in instance.players)
 		{
 			var player = instance.players[token];
@@ -104,9 +106,20 @@ var Game = function()
 					player.transformToPrey();
 					other.transformToJager();
 				}
+
+				hasJager = true;
+			}
+			else if(player.isTransform === true)
+			{
+				hasJager = true;
 			}
 
 			player.update();
+		}
+
+		if(hasJager === false && player !== undefined)
+		{
+			player.transformToJager();
 		}
 
 		requestAnimationFrame(instance.update);
