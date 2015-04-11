@@ -4,6 +4,7 @@ var Game = function()
 
 	this.players = {};
 	this.configurations = {};
+	this.ws = null;
 
 	this.inititialize = function()
 	{
@@ -23,6 +24,12 @@ var Game = function()
 						}
 			})();
 		}
+
+		this.ws = io();
+
+	    this.ws.on('addPlayer', function(data) {
+	        this.addPlayer(data.token, data);
+	    });
 
 		this.configure();
 
@@ -79,6 +86,19 @@ var Game = function()
 
 		for(token in instance.players)
 		{
+			var player 	= instance.players[token];
+
+			if(player.isJager === true)
+			{
+				var other = this.getCollision(player);
+
+				if(other !== null)
+				{
+					this.transformPlayer(player);
+					this.transformPlayer(other);
+				}
+			}
+
 			instance.players[token].update();
 		}
 
@@ -97,6 +117,10 @@ var Game = function()
 		if(this.players[token] === undefined)
 		{
 			this.players[token] = new Player(args);
+
+			this.ws.on('movePlayer', function(data) {
+		        this.movePlayer(data.token, data);
+		    });
 		}
 		else
 		{
@@ -123,29 +147,15 @@ var Game = function()
 		}
 	}
 
-	this.transformPlayer = function(token)
+	this.transformPlayer = function(player)
 	{
-		if(token === undefined)
+		if(player.isJager === true)
 		{
-			console.error("[Game] Try to transform player without a valid token !");
-		}
-
-		if(this.players[token] !== undefined)
-		{
-			var player = this.players[token];
-
-			if(player.isJager === true)
-			{
-				player.transformToPrey();
-			}
-			else
-			{
-				player.transformToJager();
-			}
+			player.transformToPrey();
 		}
 		else
 		{
-			console.error("[Game] Try to transform an undefined player with token " + token + " !");
+			player.transformToJager();
 		}
 	}
 }
