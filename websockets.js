@@ -43,7 +43,7 @@ function socketsController(server) {
       });
 
       socket.emit('setToken', { token: token });
-    }
+    });
 
   });
 }
