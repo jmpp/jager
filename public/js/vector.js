@@ -1,35 +1,35 @@
 var Vector2 = function(x, y)
 {
-	this.x = Math.round(x);
-	this.y = Math.round(y);
+	this.x = x;
+	this.y = y;
 
 	this.set = function(x, y)
 	{
-		this.x = Math.round(x);
-		this.y = Math.round(y);
+		this.x = x;
+		this.y = y;
 	}
 }
 
 var Vector3 = function(x, y, z)
 {
-	this.x = Math.round(x);
-	this.y = Math.round(y);
-	this.z = Math.round(z);
+	this.x = x;
+	this.y = y;
+	this.z = z;
 
 	this.set = function(x, y, z)
 	{
-		this.x = Math.round(x);
-		this.y = Math.round(y);
-		this.z = Math.round(z);
+		this.x = x;
+		this.y = y;
+		this.z = z;
 	}
 }
 
 var Vector4 = function(x, y, z, a)
 {
-	this.x = Math.round(x);
-	this.y = Math.round(y);
-	this.z = Math.round(z);
-	this.a = Math.round(a);
+	this.x = x;
+	this.y = y;
+	this.z = z;
+	this.a = a;
 
 	this.toFillStyle = function()
 	{
@@ -38,9 +38,9 @@ var Vector4 = function(x, y, z, a)
 
 	this.set = function(x, y, z, a)
 	{
-		this.x = Math.round(x);
-		this.y = Math.round(y);
-		this.z = Math.round(z);
-		this.a = Math.round(a);
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.a = a;
 	}
 }
