@@ -77,7 +77,7 @@ var Player = function(args)
 
 	this.transformToPrey = function()
 	{
-		if(this.isTransform === false)
+		if(this.isJager === true && this.isTransform === false)
 		{
 			this.isTransform 	= true;
 
@@ -87,7 +87,7 @@ var Player = function(args)
 
 	this.transformToJager = function()
 	{
-		if(this.isTransform === false)
+		if(this.isJager === false && this.isTransform === false)
 		{
 			this.canMove 		= false;
 			this.isTransform 	= true;

@@ -50,8 +50,6 @@ var UniTest =
 
 		UniTest.creation(cPlayer);
 
-		UniTest.transformToJager();
-
 		UniTest.move();
 	},
 
