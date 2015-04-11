@@ -27,14 +27,11 @@ var Game = function()
 
 		this.ws = io();
 
-		this.ws.emit('setServer', 1);
+		this.ws.emit('setServer', 1);		
 
-		var that = this;
-
-    this.ws.on('addPlayer', function(data) {
-    	console.log('new player !', data);
-      that.addPlayer(data.token, data);
-    });
+	    this.ws.on('addPlayer', function(data) {
+			instance.addPlayer(data.token, data);
+	    });
 
     this.ws.on('disconnectPlayer', function(data) {
     	// @todo: supprimer le joueur data.token
@@ -94,25 +91,49 @@ var Game = function()
 	{
 		canvas.drawRect(canvas);
 
-		for(token in instance.players)
+		for(var token in instance.players)
 		{
-			var player 	= instance.players[token];
+			var player = instance.players[token];
 
 			if(player.isJager === true)
 			{
-				var other = this.getCollision(player);
+				var other = instance.getCollision(player);
 
 				if(other !== null)
 				{
-					this.transformPlayer(player);
-					this.transformPlayer(other);
+					player.transformToPrey();
+					other.transformToJager();
 				}
 			}
 
-			instance.players[token].update();
+			player.update();
 		}
 
 		requestAnimationFrame(instance.update);
+	}
+
+	this.getCollision = function(player)
+	{
+		if(player === undefined)
+		{
+			console.error("[Game] Try to get collision for an undefined player !");
+		}
+
+		for(var token in instance.players)
+		{
+			var other = instance.players[token];
+
+			if(player === other || other.isTransform === true)
+			{
+				continue;
+			}
+			else if(isCollide(player, other) === true)
+			{
+				return other;
+			}
+		}
+
+		return null;
 	}
 
 	this.addPlayer = function(token, args)
@@ -128,10 +149,8 @@ var Game = function()
 		{
 			this.players[token] = new Player(args);
 
-			var that = this;
-
 			this.ws.on('movePlayer', function(data) {
-		        that.movePlayer(data.token, data);
+		        instance.movePlayer(data.token, data);
 		    });
 		}
 		else
@@ -156,18 +175,6 @@ var Game = function()
 		else
 		{
 			console.error("[Game] Try to move an undefined player with token " + token + " !");
-		}
-	}
-
-	this.transformPlayer = function(player)
-	{
-		if(player.isJager === true)
-		{
-			player.transformToPrey();
-		}
-		else
-		{
-			player.transformToJager();
 		}
 	}
 }
