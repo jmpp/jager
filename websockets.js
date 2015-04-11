@@ -4,48 +4,56 @@ var _       = require('underscore');
 var io      = require('socket.io');
 var shortid = require('shortid');
 
-// var Player  = require('./class/Player');
+var server = global.server;
+var ws = io(server);
+var socketServer;
 
-var playersList = [];
+// Middleware for server view socket exchange
+// ------------------------------------------
+function socketsControllerServer(req, res, next) {
+  console.log("in middleware socketsControllerServer()".blue);
 
-// Main controller
-// ---------------
-function socketsController(server) {
-  var ws = io(server);
-
-  // Once a client connect to server
   ws.on('connection', function(socket) {
+    socketServer = socket;
+  })
 
-    // When client sets a new player name
-    // ----------------------------------
-    socket.on('createPlayer', function createPlayer(name) {
-      console.log(
-        'New socket from client !'.green,
-        'createPlayer()'.magenta,
-        ('"' + name.toString() + '"').cyan
-      );
-
-      // Check if player already exists within array
-      /*var player = _.findWhere(playersList, { name: name });
-      if (player)
-        return console.error('Name ', name, 'is already taken');*/
-
-      /*playersList.push(new Player(
-        shortid.generate(),
-        name,
-
-      })*/
-      
-      var token = shortid.generate();
-      playersList.push({
-        token: token,
-        name : name
-      });
-
-      socket.emit('setToken', { token: token });
-    }
-
-  });
+  next();
 }
 
-module.exports = socketsController;
+// Middleware for client view socket exchange
+// ------------------------------------------
+function socketsControllerClient(req, res, next) {
+  console.log("in middleware socketsControllerClient()".cyan);
+  ws.on('connection', function(socket) {
+    // New player request
+    socket.on('createPlayer', function createPlayer(name) {
+      console.log('--> createPlayer('.cyan + name.toString().magenta +')'.cyan);
+
+      var token = shortid.generate();
+
+      // Sending its token to the new player
+      socket.emit('setToken', { token: token });
+      console.log('<-- setToken('.cyan + token.magenta +')'.cyan);
+
+      // Sending new player socket to the server view
+      socketServer.emit('addPlayer', { token: token, name: name });
+      console.log('<-- addPlayer('.cyan + token.magenta, name.magenta +')'.cyan);
+    })
+
+    // Move player request
+    socket.on('movePlayer', function movePlayer(data) {
+      // expects data to be like { token, position: {x, y} }
+
+      // Sending the position to the server view
+      socketServer.emit('movePlayer', data);
+      console.log('<-- movePlayer('.blue + (data.position.x +' '+ data.position.y).magenta +')'.blue);
+    })
+  })
+
+  next();
+}
+
+module.exports = {
+  server: socketsControllerServer,
+  client: socketsControllerClient
+};
