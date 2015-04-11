@@ -9,15 +9,11 @@ var path    = require('path');
 
 var app = express();
 global.server = http.createServer(app);
-
-var websocketsController = require('./websockets');
+global.debug = process.argv[2] === '--debug';
 
 app.set('port', process.env.PORT || 1337);
 
-// app.use('/pilou', function(req, res, next) { console.log('PILOU!'.green); next(); });
-app.use('/'      , websocketsController.server);
-app.use('/client', websocketsController.client);
-
+app.use(require('./websockets'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(morgan('dev'));
 

@@ -27,9 +27,14 @@ var Game = function()
 
 		this.ws = io();
 
-	    this.ws.on('addPlayer', function(data) {
-	        this.addPlayer(data.token, data);
-	    });
+		this.ws.emit('setServer', 1);
+
+		var that = this;
+
+    this.ws.on('addPlayer', function(data) {
+    	console.log('new player !', data);
+      that.addPlayer(data.token, data);
+    });
 
 		this.configure();
 
@@ -118,8 +123,10 @@ var Game = function()
 		{
 			this.players[token] = new Player(args);
 
+			var that = this;
+
 			this.ws.on('movePlayer', function(data) {
-		        this.movePlayer(data.token, data);
+		        that.movePlayer(data.token, data);
 		    });
 		}
 		else

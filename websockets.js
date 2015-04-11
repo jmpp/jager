@@ -2,58 +2,61 @@
 
 var _       = require('underscore');
 var io      = require('socket.io');
+var path    = require('path');
 var shortid = require('shortid');
 
 var server = global.server;
+var DEBUG = global.debug;
+
 var ws = io(server);
-var socketServer;
+var serverSocketId;
 
-// Middleware for server view socket exchange
-// ------------------------------------------
-function socketsControllerServer(req, res, next) {
-  console.log("in middleware socketsControllerServer()".blue);
+// Websockets controller
+// ---------------------
+function socketsController(req, res, next) {
+
+  if (req.url !== '/' && req.url !== '/client')
+    return next();
 
   ws.on('connection', function(socket) {
-    socketServer = socket;
-  })
 
-  next();
-}
+    // Server view
+    socket.on('setServer', function setServer(data) {
+      if (serverSocketId)
+        return;
 
-// Middleware for client view socket exchange
-// ------------------------------------------
-function socketsControllerClient(req, res, next) {
-  console.log("in middleware socketsControllerClient()".cyan);
-  ws.on('connection', function(socket) {
+      DEBUG && console.log('--> setServer()'.blue);
+      serverSocketId = socket.id;
+    });
+
     // New player request
     socket.on('createPlayer', function createPlayer(data) {
-      console.log('--> createPlayer('.cyan + data.name.toString().magenta +')'.cyan);
 
+      DEBUG && console.log('--> createPlayer('.cyan + data.name.toString().magenta +')'.cyan);
       var token = shortid.generate();
 
       // Sending its token to the new player
       socket.emit('setToken', { token: token });
-      console.log('<-- setToken('.cyan + token.magenta +')'.cyan);
+      DEBUG && console.log('<-- setToken('.cyan + token.magenta +')'.cyan);
 
       // Sending new player socket to the server view
-      socketServer.emit('addPlayer', { token: token, name: data.name });
-      console.log('<-- addPlayer('.cyan + token.magenta, data.name.magenta +')'.cyan);
-    })
+      socket.to(serverSocketId).emit('addPlayer', { token: token, name: data.name });
+      DEBUG && console.log('<-- addPlayer('.cyan + token.magenta, data.name.magenta +')'.cyan);
+      DEBUG && console.log('-------------'.cyan);
+    });
 
     // Move player request
     socket.on('movePlayer', function movePlayer(data) {
       // expects data to be like { token, x, y }
 
       // Sending the position to the server view
-      socketServer.emit('movePlayer', data);
-      console.log('<-- movePlayer('.blue + (data.x +' '+ data.y).magenta +')'.blue);
-    })
-  })
+      socket.to(serverSocketId).emit('movePlayer', data);
+      DEBUG && console.log('<-- movePlayer('.blue + (data.token + ' ' + data.x + ' ' + data.y).magenta + ')'.blue);
+    });
+  });
 
   next();
+
 }
 
-module.exports = {
-  server: socketsControllerServer,
-  client: socketsControllerClient
-};
+module.exports = socketsController;
