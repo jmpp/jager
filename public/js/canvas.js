@@ -33,6 +33,8 @@ var Canvas = function()
   		instance.element.height = window.innerHeight * height / 100;
 
   		instance.scale.set(instance.element.width,instance.element.height);
+  		
+	    window.scrollTo(0, 0);
 	}
 
 	this.fillStyle = function(color)
