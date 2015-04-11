@@ -79,8 +79,11 @@ function socketsController(req, res, next) {
       // Player disconnect
       var player = _.findWhere(playersList, { socketId: socket.id });
 
-      if (player)
+      if (player) {
+        _.without(playersList, _.findWhere(playersList, {token: player.token}));
         socket.to(serverSocketId).emit('disconnectPlayer', { token: player.token });
+      }
+
     });
   });
 
